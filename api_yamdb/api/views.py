@@ -1,5 +1,5 @@
-from django.shortcuts import get_object_or_404
-from django_filters.rest_framework import DjangoFilterBackend
+from django.shortcuts import render
+
 
 from rest_framework import permissions, mixins, filters
 from rest_framework.viewsets import (
@@ -19,3 +19,4 @@ class ReviewViewSet(ReadOnlyModelViewSet):
 class CommentViewSet(ModelViewSet):
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer
+

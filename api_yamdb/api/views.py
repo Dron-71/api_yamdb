@@ -7,7 +7,7 @@ from rest_framework.viewsets import (
 
 from api_yamdb.reviews.models import (
     Review, Comment, Category, Genre, User, Title)
-from .serializers import (
+from api_yamdb.api.serializers import (
     ReviewSerializer, CommentSerializer)
 
 

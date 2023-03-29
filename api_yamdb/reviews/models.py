@@ -12,6 +12,9 @@ class Category(models.Model):
         unique=True,
     )
 
+    def __str__(self):
+        return self.name
+
 
 class Genre(models.Model):
     """Модель жанров."""
@@ -23,6 +26,9 @@ class Genre(models.Model):
         max_length=50,
         unique=True,
     )
+
+    def __str__(self):
+        return self.name
 
 
 class Title(models.Model):

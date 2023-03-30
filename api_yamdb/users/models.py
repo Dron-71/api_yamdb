@@ -1,22 +1,9 @@
-import os
-
-from dotenv import load_dotenv
-
 from django.contrib.auth.models import AbstractUser
 from django.contrib.auth.validators import UnicodeUsernameValidator
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
 from .validators import UsernameValidator
-
-
-load_dotenv()
-
-
-DEFAULT_USER_PASSWORD = os.getenv(
-    'DEFAULT_USER_PASSWORD',
-    default='some-password',
-)
 
 
 class User(AbstractUser):

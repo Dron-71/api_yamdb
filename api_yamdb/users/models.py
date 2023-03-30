@@ -42,23 +42,16 @@ class User(AbstractUser):
             'unique': _('A user with that username already exists.'),
         },
     )
-    password = models.CharField(
-        _('password'),
-        max_length=128,
-        default=DEFAULT_USER_PASSWORD,
-    )
-    is_active = models.BooleanField(
-        _('active'),
-        default=False,
-        help_text=_(
-            'User is considered as the inactive one unless he get the token.',
-        ),
-    )
     email = models.EmailField(_('email_address'), max_length=254, unique=True)
     bio = models.TextField(_('biography'), blank=True)
     role = models.CharField(
         _('role'), max_length=9, choices=ROLE_CHOICES, default='user',
     )
+
+    class Meta:
+        verbose_name = 'Пользователь'
+        verbose_name_plural = 'Пользователи'
+        ordering = ['username']
 
     @property
     def is_admin(self):

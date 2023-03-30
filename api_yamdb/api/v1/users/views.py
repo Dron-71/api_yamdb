@@ -51,8 +51,6 @@ class TokenGenerationView(APIView):
         serializer = TokenGenerationSerializer(data=request.data)
         if serializer.is_valid():
             user = User.objects.get(username=request.data.get('username'))
-            user.is_active = True
-            user.save()
             token = JWTToken.for_user(user)
             return Response({'token': str(token)}, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

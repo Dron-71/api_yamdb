@@ -41,3 +41,25 @@ class TokenGenerationSerializer(serializers.Serializer):
                 {'confirmation_code': 'Введен неверный код подтверждения.'},
             )
         return data
+
+
+class UserSerializer(serializers.ModelSerializer):
+    """Serializer to work with users (for admin only)."""
+
+    class Meta:
+        model = User
+        fields = (
+            'username',
+            'email',
+            'first_name',
+            'last_name',
+            'bio',
+            'role',
+        )
+
+
+class UserMeSerializer(UserSerializer):
+    """Serializer to work with current user."""
+
+    class Meta(UserSerializer.Meta):
+        read_only_fields = ('role',)

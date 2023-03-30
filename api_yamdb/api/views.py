@@ -5,9 +5,9 @@ from rest_framework import permissions, mixins, filters
 from rest_framework.viewsets import (
     ModelViewSet, ReadOnlyModelViewSet, GenericViewSet)
 
-from api_yamdb.reviews.models import (
+from reviews.models import (
     Review, Comment, Category, Genre, User, Title)
-from api_yamdb.api.serializers import (
+from api.serializers import (
     ReviewSerializer, CommentSerializer)
 
 

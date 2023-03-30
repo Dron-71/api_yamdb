@@ -6,7 +6,7 @@ from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from rest_framework_simplejwt import views
 
-from api_yamdb.api.views import (
+from api.views import (
     ReviewViewSet, CommentViewSet)
 
 router = DefaultRouter()
@@ -34,7 +34,6 @@ urlpatterns += [
 
 urlpatterns = [
     path(r'v1/', include(router.urls)),
-    path(r'v1/', include('djoser.urls')),  # Работа с пользователями
 ]
 
 urlpatterns += [

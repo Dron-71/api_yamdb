@@ -1,3 +1,4 @@
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.contrib.auth import get_user_model
 
@@ -27,25 +28,6 @@ class Genre(models.Model):
         return self.name
 
 
-class Review(models.Model):
-    text = models.TextField()
-    author = models.ForeignKey(
-        User,
-        on_delete=models.CASCADE,
-        related_name='reviews'
-    )
-    score = models.PositiveSmallIntegerField(
-        blank=True
-    )
-    pub_date = models.DateTimeField(
-        'Дата публикации',
-        auto_now_add=True
-    )
-
-    def __str__(self):
-        return self.text[:15]
-
-
 class Title(models.Model):
     name = models.CharField(max_length=150)
     year = models.DateTimeField()
@@ -60,6 +42,36 @@ class Title(models.Model):
 
     def __str__(self):
         return self.name
+
+
+def validate_score(score):
+    if score not in range(1, 10):
+        raise ValidationError('Score must be between 1 and 10')
+
+
+class Review(models.Model):
+    text = models.TextField()
+    author = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='reviews'
+    )
+    score = models.PositiveSmallIntegerField(
+        blank=True,
+        validators=[validate_score]
+    )
+    title = models.ForeignKey(
+        Title,
+        on_delete=models.CASCADE,
+        related_name='reviews'
+    )
+    pub_date = models.DateTimeField(
+        'Дата публикации',
+        auto_now_add=True
+    )
+
+    def __str__(self):
+        return self.text[:15]
 
 
 class Comment(models.Model):

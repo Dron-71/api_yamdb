@@ -35,7 +35,7 @@ class User(AbstractUser):
         unique=True,
         help_text=_(
             'Required. 150 characters or fewer. Letters, digits and '
-            '@/./+/-/_ only. Not equal to "me".'
+            '@/./+/-/_ only. Not equal to "me".',
         ),
         validators=[UnicodeUsernameValidator(), UsernameValidator()],
         error_messages={
@@ -51,7 +51,7 @@ class User(AbstractUser):
         _('active'),
         default=False,
         help_text=_(
-            'User is considered as the inactive one unless he get the token.'
+            'User is considered as the inactive one unless he get the token.',
         ),
     )
     email = models.EmailField(_('email_address'), max_length=254, unique=True)

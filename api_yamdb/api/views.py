@@ -11,9 +11,7 @@ from api.serializers import (
 
 
 class ReviewViewSet(ReadOnlyModelViewSet):
-    # queryset = Review.objects.all()
     serializer_class = ReviewSerializer
-    pagination_class = (pagination.LimitOffsetPagination,)
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
 
     def get_queryset(self):
@@ -28,7 +26,6 @@ class ReviewViewSet(ReadOnlyModelViewSet):
 class CommentViewSet(ModelViewSet):
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer
-    pagination_class = (pagination.LimitOffsetPagination,)
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
 
     def get_queryset(self):

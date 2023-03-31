@@ -30,7 +30,7 @@ class Genre(models.Model):
 
 class Title(models.Model):
     name = models.CharField(max_length=150)
-    year = models.DateTimeField()
+    year = models.DateField()
     description = models.TextField(blank=True)
     genre = models.ForeignKey(
         Genre,

@@ -85,6 +85,11 @@ class Comment(models.Model):
         'Дата публикации',
         auto_now_add=True
     )
+    review = models.ForeignKey(
+        Review,
+        on_delete=models.CASCADE,
+        related_name='comments'
+    )
 
     def __str__(self):
         return self.text[:15]

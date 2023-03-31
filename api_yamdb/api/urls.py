@@ -9,6 +9,8 @@ from rest_framework_simplejwt import views
 from api.views import (
     ReviewViewSet, CommentViewSet)
 
+app_name = 'api'
+
 router = DefaultRouter()
 
 router.register(
@@ -16,34 +18,25 @@ router.register(
     ReviewViewSet,
     basename='reviews'
 )
-router.register(
-    r'titles/(?P<title_id>\d+)/reviews/(?P<review_id>\d+)/',
-    ReviewViewSet,
-    basename='reviews-detail'
-)
+# router.register(
+#     r'titles/(?P<title_id>\d+)/reviews/(?P<review_id>\d+)/',
+#     ReviewViewSet,
+#     basename='reviews-detail'
+# )
 router.register(
     r'titles/(?P<title_id>\d+)/reviews/(?P<review_id>\d+)/comments/',
     ReviewViewSet,
     basename='comments'
 )
-app_name = 'api'
 
-urlpatterns += [
+urlpatterns = [
     path('v1/', include('api.v1.urls', namespace='api_v1')),
 ]
 
-urlpatterns = [
+urlpatterns += [
     path(r'v1/', include(router.urls)),
 ]
 
-urlpatterns += [
-    path(r'v1/jwt/create/',
-         views.TokenObtainPairView.as_view(), name="jwt-create"),
-    path(r'v1/jwt/refresh/',
-         views.TokenRefreshView.as_view(), name="jwt-refresh"),
-    path(r'v1/jwt/verify/',
-         views.TokenVerifyView.as_view(), name="jwt-verify"),
-]
 if settings.DEBUG:
     urlpatterns += static(
         settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

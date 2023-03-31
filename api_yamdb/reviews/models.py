@@ -49,14 +49,14 @@ class Title(models.Model):
         Genre,
         verbose_name='Жанр произвидения',
         blank=True,
-        related_name='titles_id',
+        related_name='genre',
     )
     category = models.ForeignKey(
         Category,
         verbose_name='Категория (типы) произвидения',
         blank=True,
         null=True,
-        related_name='titles_id',
+        related_name='category',
         on_delete=models.SET_NULL,
     )
 

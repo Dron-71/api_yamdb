@@ -1,11 +1,10 @@
 from django.contrib import admin
-from .models import Category, Genre, Title
 
 from .models import Category, Comment, Genre, GenreTitle, Review, Title
 
 
 class NameSlugAdmin(admin.ModelAdmin):
-    """Admin config for NameSlugModel."""
+    """Admin config for abstract NameSlugModel."""
 
     list_display = ('pk', 'name', 'slug')
     prepopulated_fields = {'slug': ('name',)}

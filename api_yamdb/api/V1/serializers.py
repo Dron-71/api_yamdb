@@ -18,7 +18,7 @@ class GenreSerializer(serializers.ModelSerializer):
 
 
 class TitleSerializer(serializers.ModelSerializer):
-    """Сериализатор произведений."""
+    """Сериализатор списка всех произведений."""
     class Meta:
         model = Title
         fields = '__all__'
@@ -30,3 +30,15 @@ class TitleSerializer(serializers.ModelSerializer):
                 'Год выпуска не может быть больше текущего'
             )
         return value
+
+
+class RetrieveTitleSerializer(serializers.ModelSerializer):
+    """Сериализатор для конкретного произведения."""
+    genre = GenreSerializer(many=True)
+    category = CategorySerializer()
+    rating = serializers.IntegerField()
+
+    class Meta:
+        model = Title
+        fields = ('id', 'name', 'year', 'rating',
+                  'description', 'genre', 'category')

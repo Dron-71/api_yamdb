@@ -49,16 +49,30 @@ class Title(models.Model):
         Genre,
         verbose_name='Жанр произвидения',
         blank=True,
-        related_name='genre',
+        through='GenreTitle'
     )
     category = models.ForeignKey(
         Category,
         verbose_name='Категория (типы) произвидения',
         blank=True,
         null=True,
-        related_name='category',
+        related_name='categories',
         on_delete=models.SET_NULL,
     )
 
     def __str__(self):
         return self.name
+
+
+class GenreTitle(models.Model):
+    """Промежуточная модель"""
+    title = models.ForeignKey(
+        Title,
+        verbose_name='Название произвидения',
+        on_delete=models.CASCADE
+    )
+    genre = models.ForeignKey(
+        Genre,
+        verbose_name='Жанр произвидения',
+        on_delete=models.CASCADE
+    )

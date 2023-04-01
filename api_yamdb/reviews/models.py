@@ -118,6 +118,12 @@ class Review(models.Model):
         ordering = ['author']
         verbose_name = 'Отзыв'
         verbose_name_plural = 'Отзывы'
+        constraints = [
+            models.UniqueConstraint(
+                fields=['author', 'title'],
+                name='author_title_unique',
+            ),
+        ]
 
     def __str__(self):
         return self.text[:STR_LENGTH]

@@ -8,7 +8,7 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
-from core.models import NameSlugModel
+from core.models import NameSlugModel, PublicationModel
 
 
 load_dotenv()
@@ -45,7 +45,7 @@ class Title(models.Model):
         validators=[MaxValueValidator(dt.now().year)]
     )
     description = models.TextField(_('Описание'), blank=True, null=True)
-    genre = models.ManyToManyField(Genre, through='GenreTitle')
+    genre = models.ManyToManyField(Genre)
     category = models.ForeignKey(
         Category,
         verbose_name=_('Категория'),
@@ -63,46 +63,9 @@ class Title(models.Model):
         return self.name[:STR_LENGTH]
 
 
-class GenreTitle(models.Model):
-    """Tile-Genre connection table."""
-
-    title = models.ForeignKey(
-        Title,
-        verbose_name=_('Произведение'),
-        on_delete=models.CASCADE,
-    )
-    genre = models.ForeignKey(
-        Genre,
-        verbose_name=_('Жанр'),
-        on_delete=models.CASCADE,
-    )
-
-    class Meta:
-        ordering = ['title']
-        verbose_name = 'Произведение-Жанр'
-        verbose_name_plural = 'Произведения-Жанры'
-        constraints = [
-            models.UniqueConstraint(
-                fields=['title', 'genre'],
-                name='title_genre_unique',
-            ),
-        ]
-
-    def __str__(self):
-        return f'{self.title} - {self.genre}'
-
-
-class Review(models.Model):
+class Review(PublicationModel):
     """Model for a review."""
 
-    text = models.TextField(_('Текст'))
-    pub_date = models.DateTimeField(_('Дата публикации'), auto_now_add=True)
-    author = models.ForeignKey(
-        User,
-        verbose_name=_('Автор'),
-        related_name='reviews',
-        on_delete=models.CASCADE,
-    )
     title = models.ForeignKey(
         Title,
         verbose_name=_('Произведение'),
@@ -114,8 +77,7 @@ class Review(models.Model):
         validators=[MinValueValidator(1), MaxValueValidator(10)]
     )
 
-    class Meta:
-        ordering = ['author']
+    class Meta(PublicationModel.Meta):
         verbose_name = 'Отзыв'
         verbose_name_plural = 'Отзывы'
         constraints = [
@@ -125,21 +87,10 @@ class Review(models.Model):
             ),
         ]
 
-    def __str__(self):
-        return self.text[:STR_LENGTH]
 
-
-class Comment(models.Model):
+class Comment(PublicationModel):
     """Model for a comment."""
 
-    text = models.TextField(_('Текст'))
-    pub_date = models.DateTimeField(_('Дата публикации'), auto_now_add=True)
-    author = models.ForeignKey(
-        User,
-        verbose_name=_('Автор'),
-        related_name='comments',
-        on_delete=models.CASCADE,
-    )
     review = models.ForeignKey(
         Review,
         verbose_name=_('Отзыв'),
@@ -147,10 +98,6 @@ class Comment(models.Model):
         on_delete=models.CASCADE,
     )
 
-    class Meta:
-        ordering = ['author']
+    class Meta(PublicationModel.Meta):
         verbose_name = 'Комментарий'
         verbose_name_plural = 'Комментарии'
-
-    def __str__(self):
-        return self.text[:STR_LENGTH]

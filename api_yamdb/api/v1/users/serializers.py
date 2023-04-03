@@ -2,6 +2,7 @@ from rest_framework import serializers
 
 from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
+from django.utils.translation import gettext_lazy as _
 
 from .hashers import UserIdHasher
 from .utils import send_confirmation_code
@@ -38,7 +39,7 @@ class TokenGenerationSerializer(serializers.Serializer):
         check = UserIdHasher().check_code(data['confirmation_code'], user.pk)
         if not check:
             raise serializers.ValidationError(
-                {'confirmation_code': 'Введен неверный код подтверждения.'},
+                {'confirmation_code': _('Введен неверный код подтверждения.')},
             )
         return data
 

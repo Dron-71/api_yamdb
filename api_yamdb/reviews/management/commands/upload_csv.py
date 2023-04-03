@@ -1,6 +1,7 @@
 from typing import Any, Dict, Optional
 
 from django.core.management import BaseCommand
+from django.utils.translation import gettext_lazy as _
 
 from reviews.models import Category, Comment, Genre, Review, Title, User
 
@@ -51,7 +52,7 @@ class Command(BaseCommand):
                     exclude_fields=attrs['exclude_fields'],
                 )
                 self.stdout.write(
-                    f'{file_name} - загружено {valid} из {total} объектов',
+                    _(f'{file_name} - загружено {valid} из {total} объектов'),
                     ending=' ',
                 )
                 if total == valid:
@@ -60,23 +61,27 @@ class Command(BaseCommand):
                     self.stdout.write(self.style.ERROR('FAILED'))
                     for error in errors:
                         self.stderr.write(
-                            f'Строка {error["id"]}:',
+                            _(f'Строка {error["id"]}:'),
                             ending=' ',
                         )
                         for key, value in error.items():
                             if key != 'id':
                                 self.stderr.write(
-                                    f'поле {key} - {value[0]}',
+                                    _(f'поле {key} - {value[0]}'),
                                     ending=' ',
                                 )
                         self.stderr.write()
             except ValueError as e:
                 self.stderr.write(
-                    f'{file_name} - ошибка при загрузке данных: '
-                    f'{e}'
+                    _(
+                        f'{file_name} - ошибка при загрузке данных: '
+                        f'{e}'
+                    )
                 )
                 self.stderr.write(
-                    'Если в таблице есть значения из связанных таблиц, '
-                    'то добавьте в имя столбца суффикс "_id". Например, '
-                    '"title_id".'
+                    _(
+                        'Если в таблице есть значения из связанных таблиц, '
+                        'то добавьте в имя столбца суффикс "_id". Например, '
+                        '"title_id".'
+                    )
                 )

@@ -1,6 +1,7 @@
 from rest_framework import permissions, serializers, viewsets
 
 from django.shortcuts import get_object_or_404
+from django.utils.translation import gettext_lazy as _
 
 from reviews.models import Review, Title
 
@@ -45,9 +46,11 @@ class ReviewViewSet(IsAuthorOrStaffViewSet):
             raise serializers.ValidationError(
                 {
                     'non-field-errors': (
-                        'Вы уже оставляли отзыв на это произведение. '
-                        'Пожалуйста, используйте PATCH-запрос для '
-                        'его изменения.'
+                        _(
+                            'Вы уже оставляли отзыв на это произведение. '
+                            'Пожалуйста, используйте PATCH-запрос для '
+                            'его изменения.'
+                        )
                     )
                 }
             )

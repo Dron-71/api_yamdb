@@ -17,22 +17,26 @@ class User(AbstractUser):
     ]
 
     username = models.CharField(
-        _('username'),
+        _('Имя пользователя'),
         max_length=150,
         unique=True,
         help_text=_(
-            'Required. 150 characters or fewer. Letters, digits and '
-            '@/./+/-/_ only. Not equal to "me".',
+            'Обязательное поле. 150 символов или меньше. Только буквы, '
+            'цифры и символы "@/./+/-/_". Не равно "me".'
         ),
         validators=[UnicodeUsernameValidator(), UsernameValidator()],
         error_messages={
-            'unique': _('A user with that username already exists.'),
+            'unique': _('Пользователь с таким именем уже существует.'),
         },
     )
-    email = models.EmailField(_('email_address'), max_length=254, unique=True)
-    bio = models.TextField(_('biography'), blank=True)
+    email = models.EmailField(
+        _('Электронная почта'),
+        max_length=254,
+        unique=True,
+    )
+    bio = models.TextField(_('О себе'), blank=True)
     role = models.CharField(
-        _('role'), max_length=9, choices=ROLE_CHOICES, default='user',
+        _('Роль'), max_length=9, choices=ROLE_CHOICES, default='user',
     )
 
     class Meta:

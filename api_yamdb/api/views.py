@@ -61,14 +61,13 @@ class ReviewViewSet(ModelViewSet):
 
 class CommentViewSet(ModelViewSet):
     serializer_class = CommentSerializer
-    parser_classes = (JSONParser,)
     permission_classes = (
         IsAllowedOrReadOnly,
     )
 
     def get_queryset(self):
         review = get_object_or_404(Review, pk=self.kwargs.get('review_id'))
-        return review.comments.prefetch_related('title').all()
+        return review.comments.prefetch_related('author').all()
 
     def perform_create(self, serializer):
         review = get_object_or_404(Review, pk=self.kwargs.get('review_id'),

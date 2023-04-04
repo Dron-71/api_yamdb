@@ -32,6 +32,7 @@ INSTALLED_APPS = [
     'users',
     'api',
     'reviews',
+    'csvimport',
 ]
 
 MIDDLEWARE = [

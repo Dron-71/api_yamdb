@@ -26,7 +26,6 @@ class GenreSerializer(serializers.ModelSerializer):
         model = Genre
         fields = ('id', 'name', 'slug')
 
-
 class TitleSerializer(serializers.ModelSerializer):
 
     rating = serializers.SerializerMethodField()
@@ -34,11 +33,11 @@ class TitleSerializer(serializers.ModelSerializer):
         slug_field='slug',
         queryset=Category.objects.all()
     )
-    genre = serializers.SlugRelatedField(
-        slug_field='slug',
-        queryset=Genre.objects.all(),
-        many=True
-    )
+    # genre = serializers.SlugRelatedField(
+    #     slug_field='slug',
+    #     queryset=Genre.objects.all(),
+    #     many=True
+    # )
 
     class Meta:
         model = Title
@@ -73,16 +72,6 @@ class ReviewSerializer(serializers.ModelSerializer):
 
 
 class CommentSerializer(serializers.ModelSerializer):
-    title = serializers.SlugRelatedField(
-        read_only=True,
-        slug_field='comments'
-    )
-    review = serializers.SlugRelatedField(
-        read_only=True,
-        slug_field='comments',
-        default=serializers.HyperlinkedModelSerializer()
-    )
-
     class Meta:
         model = Comment
         fields = '__all__'

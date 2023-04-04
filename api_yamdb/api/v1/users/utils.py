@@ -13,10 +13,10 @@ def send_confirmation_code(user: User) -> None:
     """Send confirmation code by email."""
     confirmation_code = UserIdHasher().encode(user.pk)
     send_mail(
-        subject=_('Your confirmation code'),
+        subject=_('Ваш код подтверждения'),
         message=_(
-            f'Please, use <{confirmation_code}> as your confirmation code '
-            'to activate your account and get JWT-token.',
+            f'Пожалуйста, используйте <{confirmation_code}> как ваш код '
+            ' подтверждения для активации аккаунта и получения JWT-токена.',
         ),
         from_email=settings.DEFAULT_FROM_EMAIL,
         recipient_list=[user.email],

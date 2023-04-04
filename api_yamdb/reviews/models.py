@@ -1,4 +1,7 @@
+from datetime import datetime
+
 from django.core.exceptions import ValidationError
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.contrib.auth import get_user_model
 
@@ -10,7 +13,7 @@ class Category(models.Model):
     name = models.CharField(max_length=256)
     slug = models.SlugField(
         unique=True,
-        max_length=50
+        max_length=50,
     )
 
     def __str__(self):
@@ -30,23 +33,19 @@ class Genre(models.Model):
 
 class Title(models.Model):
     name = models.CharField(max_length=150)
-    year = models.PositiveSmallIntegerField()
-    description = models.TextField(blank=True)
-    genre = models.ForeignKey(
-        Genre,
+    year = models.IntegerField(
+        validators=[MaxValueValidator(datetime.now().year)]
+    )
+    description = models.TextField(blank=True, null=True)
+    genre = models.ManyToManyField(Genre, through='GenreTitle')
+    category = models.ForeignKey(
+        Category,
         on_delete=models.CASCADE,
-        blank=True,
-        null=True,
         related_name='titles'
     )
 
     def __str__(self):
         return self.name
-
-
-def validate_score(score):
-    if score not in range(1, 10):
-        raise ValidationError('Score must be between 1 and 10')
 
 
 class Review(models.Model):
@@ -57,8 +56,11 @@ class Review(models.Model):
         related_name='reviews'
     )
     score = models.PositiveSmallIntegerField(
-        blank=True,
-        validators=[validate_score]
+        validators=[
+            MinValueValidator(limit_value=1),
+            MinValueValidator(limit_value=10)
+        ]
+
     )
     title = models.ForeignKey(
         Title,
@@ -69,6 +71,14 @@ class Review(models.Model):
         'Дата публикации',
         auto_now_add=True
     )
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=['author_id', 'title_id'],
+                name='author_title_unique',
+            ),
+        ]
 
     def __str__(self):
         return self.text[:15]
@@ -93,3 +103,28 @@ class Comment(models.Model):
 
     def __str__(self):
         return self.text[:15]
+
+
+class GenreTitle(models.Model):
+
+    title = models.ForeignKey(
+        Title,
+        on_delete=models.CASCADE,
+        related_name='genre_title'
+    )
+    genre = models.ForeignKey(
+        Genre,
+        on_delete=models.CASCADE,
+        related_name='genre_title'
+    )
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=['title', 'genre'],
+                name='title_genre_unique',
+            ),
+        ]
+
+    def __str__(self):
+        return f'{self.title} - {self.genre}'

@@ -22,9 +22,8 @@ class IsAllowedOrReadOnly(permissions.BasePermission):
         if request.method in permissions.SAFE_METHODS:
             return True
         elif (request.method in ('PATCH', 'DELETE')
-              and (request.user.is_moderator or request.user.is_admin)):
-            return True
-        elif request.user == obj.author or request.user.is_admin:
+              and (request.user.is_moderator or request.user.is_admin)
+                or request.user == obj.author):
             return True
         else:
             return False

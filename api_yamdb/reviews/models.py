@@ -28,7 +28,7 @@ class Genre(models.Model):
     )
 
     def __str__(self):
-        return self.name
+        return f'{self.name} : {self.slug}'
 
 
 class Title(models.Model):
@@ -40,8 +40,9 @@ class Title(models.Model):
     genre = models.ManyToManyField(Genre, through='GenreTitle')
     category = models.ForeignKey(
         Category,
-        on_delete=models.CASCADE,
-        related_name='titles'
+        on_delete=models.SET_NULL,
+        related_name='titles',
+        null=True
     )
 
     def __str__(self):

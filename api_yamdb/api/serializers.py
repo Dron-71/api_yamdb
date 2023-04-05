@@ -26,25 +26,22 @@ class GenreSerializer(serializers.ModelSerializer):
         model = Genre
         fields = ('id', 'name', 'slug')
 
+
 class TitleSerializer(serializers.ModelSerializer):
 
     rating = serializers.SerializerMethodField()
     category = serializers.SlugRelatedField(
         slug_field='slug',
         queryset=Category.objects.all()
-    )
-    # genre = serializers.SlugRelatedField(
-    #     slug_field='slug',
-    #     queryset=Genre.objects.all(),
-    #     many=True
-    # )
+        )
 
     class Meta:
         model = Title
         fields = (
             'id', 'name', 'rating', 'year', 'genre', 'category', 'description'
         )
-        read_only_fields = ('id', 'rating')
+        read_only_fields = ('rating',)
+
 
     def get_rating(self, obj):
         rating = obj.reviews.aggregate(Avg('score')).get('score__avg')
@@ -76,6 +73,7 @@ class CommentSerializer(serializers.ModelSerializer):
         read_only=True,
         slug_field='username'
     )
+
     class Meta:
         model = Comment
         fields = '__all__'

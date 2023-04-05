@@ -2,10 +2,11 @@
 import csv
 
 from django.contrib import admin
+from django.contrib.auth import get_user_model
 from reviews.models import Category, Genre, Title, Review, Comment, GenreTitle
 from csvimport.models import CsvImport
 from csvimport.form import CsvImportForm
-
+from users.models import User
 # обслуживание импорта
 from django.urls import path
 from django.http import HttpResponseRedirect
@@ -25,7 +26,7 @@ class GenreInline(admin.TabularInline):
 
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
-    # model = Category
+    model = Category
     list_display = ('id', 'name', 'slug')
 
     # даем django(urlpatterns) знать
@@ -74,7 +75,7 @@ class CategoryAdmin(admin.ModelAdmin):
 
 @admin.register(Title)
 class TitleAdmin(admin.ModelAdmin):
-    # model = Title
+    model = Title
     inlines = (GenreInline,)
     list_display = ('id', 'name', 'year', 'category', 'description')
 
@@ -100,7 +101,7 @@ class TitleAdmin(admin.ModelAdmin):
                                       'category']:
                         # обновляем страницу пользователя
                         # с информацией о какой-то ошибке
-                        messages.warning(request, 'Неверные заголовки у файла')
+                        messages.warning(request, 'Неверные заголовки у файла}')
                         return HttpResponseRedirect(request.path_info)
                     for row in rows:
                         print(row[2])
@@ -109,7 +110,7 @@ class TitleAdmin(admin.ModelAdmin):
                             id=row[0],
                             name=row[1],
                             year=row[2],
-                            category=row[3],
+                            category=Category.objects.get(id=row[3])
 
                         )
                 # возвращаем пользователя на главную с сообщением об успехе
@@ -168,7 +169,7 @@ class GenreAdmin(admin.ModelAdmin):
 
 @admin.register(Review)
 class ReviewAdmin(admin.ModelAdmin):
-    # model = Review
+    model = Review
     list_display = ('id', 'text', 'author', 'score', 'title', 'pub_date')
 
     def get_urls(self):
@@ -200,9 +201,9 @@ class ReviewAdmin(admin.ModelAdmin):
                         # добавляем данные в базу
                         Review.objects.update_or_create(
                             id=row[0],
-                            title_id=row[1],
+                            title_id=Title.objects.get(pk=row[1]),
                             text=row[2],
-                            author=row[3],
+                            author=User.objects.get(pk=row[3]),
                             score=row[4],
                             pub_date=row[5]
                         )
@@ -215,7 +216,95 @@ class ReviewAdmin(admin.ModelAdmin):
         return render(request, 'admin/csv_import_page.html', {'form': form})
 
 
+@admin.register(Comment)
+class CommentAdmin(admin.ModelAdmin):
+    model = Comment
+    list_display = ('id', 'review_id', 'text', 'author', 'pub_date')
+
+    def get_urls(self):
+        urls = super().get_urls()
+        urls.insert(-1, path('csv-upload/', self.upload_csv))
+        return urls
+
+        # если пользователь открыл url 'csv-upload/',
+        # то он выполнит этот метод,
+        # который работает с формой
+    def upload_csv(self, request):
+        if request.method == 'POST':
+            # т.к. это метод POST проводим валидацию данных
+            form = CsvImportForm(request.POST, request.FILES)
+            if form.is_valid():
+                # сохраняем загруженный файл и делаем запись в базу
+                form_object = form.save()
+                # обработка csv файла
+                with form_object.csv_file.open('r') as csv_file:
+                    rows = csv.reader(csv_file, delimiter=',')
+                    if next(rows) != ['id', 'review_id', 'text', 'author',
+                                      'pub_date']:
+                        # обновляем страницу пользователя
+                        # с информацией о какой-то ошибке
+                        messages.warning(request, 'Неверные заголовки у файла')
+                        return HttpResponseRedirect(request.path_info)
+                    for row in rows:
+                        print(row[2])
+                        Comment.objects.update_or_create(
+                            id=row[0],
+                            review_id=Review.objects.get(pk=row[1]),
+                            text=row[2],
+                            author=User.objects.get(pk=row[3]),
+                            pub_date=row[4]
+
+                        )
+                        # добавляем данные в базу
+                # возвращаем пользователя на главную с сообщением об успехе
+                url = reverse('admin:index')
+                messages.success(request, 'Файл успешно импортирован')
+                return HttpResponseRedirect(url)
+        # если это не метод POST, то возвращается форма с шаблоном
+        form = CsvImportForm()
+        return render(request, 'admin/csv_import_page.html', {'form': form})
 
 
+@admin.register(GenreTitle)
+class GenreTileAdmin(admin.ModelAdmin):
 
+    list_display = ('id', 'title_id', 'genre_id')
 
+    def get_urls(self):
+        urls = super().get_urls()
+        urls.insert(-1, path('csv-upload/', self.upload_csv))
+        return urls
+
+        # если пользователь открыл url 'csv-upload/',
+        # то он выполнит этот метод,
+        # который работает с формой
+    def upload_csv(self, request):
+        if request.method == 'POST':
+            # т.к. это метод POST проводим валидацию данных
+            form = CsvImportForm(request.POST, request.FILES)
+            if form.is_valid():
+                # сохраняем загруженный файл и делаем запись в базу
+                form_object = form.save()
+                # обработка csv файла
+                with form_object.csv_file.open('r') as csv_file:
+                    rows = csv.reader(csv_file, delimiter=',')
+                    if next(rows) != ['id', 'title_id', 'genre_id']:
+                        # обновляем страницу пользователя
+                        # с информацией о какой-то ошибке
+                        messages.warning(request, 'Неверные заголовки у файла')
+                        return HttpResponseRedirect(request.path_info)
+                    for row in rows:
+                        print(row[2])
+                        # добавляем данные в базу
+                        GenreTitle.objects.update_or_create(
+                            id=row[0],
+                            title=Title.objects.get(pk=row[1]),
+                            genre=Genre.objects.get(pk=row[2]),
+                        )
+                # возвращаем пользователя на главную с сообщением об успехе
+                url = reverse('admin:index')
+                messages.success(request, 'Файл успешно импортирован')
+                return HttpResponseRedirect(url)
+        # если это не метод POST, то возвращается форма с шаблоном
+        form = CsvImportForm()
+        return render(request, 'admin/csv_import_page.html', {'form': form})

@@ -1,6 +1,5 @@
 from rest_framework import serializers
 
-from django.db.models import Avg
 from django.forms.models import model_to_dict
 
 from reviews.models import Category, Genre, Title
@@ -30,7 +29,7 @@ class GenreSerializer(serializers.ModelSerializer):
 class TitleSerializer(serializers.ModelSerializer):
     """serializer for Title model."""
 
-    rating = serializers.SerializerMethodField()
+    rating = serializers.IntegerField(default=None, read_only=True)
     genre = DictSlugRelatedField(
         slug_field='slug',
         queryset=Genre.objects,
@@ -53,7 +52,4 @@ class TitleSerializer(serializers.ModelSerializer):
             'genre',
             'category',
         )
-
-    def get_rating(self, obj):
-        rating = obj.reviews.aggregate(Avg('score')).get('score__avg')
-        return round(rating) if rating else None
+        read_only_fields = ('rating',)

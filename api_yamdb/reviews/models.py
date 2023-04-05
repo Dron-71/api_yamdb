@@ -1,5 +1,4 @@
 import os
-from datetime import datetime as dt
 
 from dotenv import load_dotenv
 
@@ -9,6 +8,8 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 
 from core.models import NameSlugModel, PublicationModel
+
+from .validators import validate_year
 
 
 load_dotenv()
@@ -39,10 +40,11 @@ class Genre(NameSlugModel):
 class Title(models.Model):
     """Model for a title."""
 
-    name = models.CharField(_('Название'), max_length=256)
+    name = models.CharField(_('Название'), max_length=256, db_index=True)
     year = models.IntegerField(
         _('Год выпуска'),
-        validators=[MaxValueValidator(dt.now().year)]
+        validators=[validate_year],
+        db_index=True,
     )
     description = models.TextField(_('Описание'), blank=True, null=True)
     genre = models.ManyToManyField(Genre)
@@ -55,7 +57,7 @@ class Title(models.Model):
     )
 
     class Meta:
-        ordering = ['name']
+        ordering = ['pk']
         verbose_name = 'Произведение'
         verbose_name_plural = 'Произведения'
 
@@ -72,9 +74,12 @@ class Review(PublicationModel):
         related_name='reviews',
         on_delete=models.CASCADE,
     )
-    score = models.IntegerField(
+    score = models.PositiveSmallIntegerField(
         _('Оценка'),
-        validators=[MinValueValidator(1), MaxValueValidator(10)]
+        validators=[
+            MinValueValidator(1, _('Оценка не может быть меньше 1')),
+            MaxValueValidator(10, _('Оценка не должна превышать 10')),
+        ]
     )
 
     class Meta(PublicationModel.Meta):

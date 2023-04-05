@@ -1,6 +1,8 @@
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters, mixins, permissions, viewsets
 
+from django.db.models import Avg
+
 from api.v1.users.permissions import IsAdmin
 from api.v1.users.views import HTTP_METHOD_NAMES
 from reviews.models import Category, Genre, Title
@@ -50,7 +52,11 @@ class GenreViewSet(ListCreateDeleteViewSet):
 class TitleViewSet(viewsets.ModelViewSet):
     """Viewset for Title model."""
 
-    queryset = Title.objects.all()
+    queryset = Title.objects.all().annotate(
+        rating=Avg('reviews__score'),
+    ).order_by(
+        'pk',
+    )
     serializer_class = TitleSerializer
     filter_backends = (DjangoFilterBackend,)
     filterset_class = TitleFilterset

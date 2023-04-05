@@ -19,7 +19,7 @@ User = get_user_model()
 class NameSlugModel(models.Model):
     """Abstract model for tables with name and slug fields."""
 
-    name = models.CharField(_('Название'), max_length=256)
+    name = models.CharField(_('Название'), max_length=256, db_index=True)
     slug = models.SlugField(_('Слаг'), max_length=50, unique=True)
 
     class Meta:
@@ -34,7 +34,11 @@ class PublicationModel(models.Model):
     """Abstract model for publications (e.g. reviews, comments)."""
 
     text = models.TextField(_('Текст'))
-    pub_date = models.DateTimeField(_('Дата публикации'), auto_now_add=True)
+    pub_date = models.DateTimeField(
+        _('Дата публикации'),
+        auto_now_add=True,
+        db_index=True,
+    )
     author = models.ForeignKey(
         User,
         verbose_name=_('Автор'),
@@ -44,7 +48,7 @@ class PublicationModel(models.Model):
 
     class Meta:
         abstract = True
-        ordering = ['author']
+        ordering = ['-pub_date', 'author']
 
     def __str__(self):
         return self.text[:STR_LENGTH]

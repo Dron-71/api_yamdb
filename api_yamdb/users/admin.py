@@ -13,7 +13,7 @@ from csvimport.form import CsvImportForm
 
 @admin.register(User)
 class UserAdmin(admin.ModelAdmin):
-    list_display = ('pk', 'username', 'email', 'is_staff', 'role')
+    list_display = ('id', 'username', 'email', 'role', 'bio', 'first_name', 'last_name')
     search_fields = ('username',)
     list_filter = ('role',)
 
@@ -35,7 +35,7 @@ class UserAdmin(admin.ModelAdmin):
                 # обработка csv файла
                 with form_object.csv_file.open('r') as csv_file:
                     rows = csv.reader(csv_file, delimiter=',')
-                    if next(rows) != ['id', 'username', 'email', 'bio', 'role']:
+                    if next(rows) != ['id', 'username', 'email', 'role', 'bio', 'first_name', 'last_name']:
                         # обновляем страницу пользователя
                         # с информацией о какой-то ошибке
                         messages.warning(request, 'Неверные заголовки у файла')
@@ -47,8 +47,10 @@ class UserAdmin(admin.ModelAdmin):
                             id=row[0],
                             username=row[1],
                             email=row[2],
-                            bio=row[3],
-                            role=row[4],
+                            role=row[3],
+                            bio=row[4],
+                            first_name=row[5],
+                            last_name=row[6]
                         )
                 # возвращаем пользователя на главную с сообщением об успехе
                 url = reverse('admin:index')

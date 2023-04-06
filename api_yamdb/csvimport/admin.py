@@ -170,7 +170,7 @@ class GenreAdmin(admin.ModelAdmin):
 @admin.register(Review)
 class ReviewAdmin(admin.ModelAdmin):
     model = Review
-    list_display = ('id', 'text', 'author', 'score', 'title', 'pub_date')
+    list_display = ('id', 'title_id', 'text', 'author', 'score',  'pub_date')
 
     def get_urls(self):
         urls = super().get_urls()
@@ -201,9 +201,9 @@ class ReviewAdmin(admin.ModelAdmin):
                         # добавляем данные в базу
                         Review.objects.update_or_create(
                             id=row[0],
-                            title_id=Title.objects.get(pk=row[1]),
+                            title_id=Title.objects.get(id=row[1]).id,
                             text=row[2],
-                            author=User.objects.get(pk=row[3]),
+                            author=User.objects.get(id=row[3]),
                             score=row[4],
                             pub_date=row[5]
                         )
@@ -249,7 +249,7 @@ class CommentAdmin(admin.ModelAdmin):
                         print(row[2])
                         Comment.objects.update_or_create(
                             id=row[0],
-                            review_id=Review.objects.get(pk=row[1]),
+                            review_id=Review.objects.get(pk=row[1]).id,
                             text=row[2],
                             author=User.objects.get(pk=row[3]),
                             pub_date=row[4]
